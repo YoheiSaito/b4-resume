@@ -83,7 +83,7 @@ $(\theta_x, \theta_y, \theta_z ,t_x, t_y, t_z)$の6次元であり,
 \end{equation}
 計算時間が長い理由は評価関数で用いられる最近傍探索の回数が
 $個体数 \times 世代数 \times N_s$と非常に多くなってしまうためである. 
-そこで植西らはキーポイントパッチ(KPP)抽出法によるECR(KPP-ECR)を提案した.\cite{KPP}
+そこで植西ら\cite{KPP}はキーポイントパッチ(KPP)抽出法によるECR(KPP-ECR)を提案した.
 この手法ではソース点群をキーポイントとその周辺の点に限定することで, 
 ECRを100倍程度の高速化に成功した. 
 しかし, 
@@ -99,7 +99,7 @@ KPP-ECRでは点群同士重なりのない場所にKPPを抽出すると
 本提案手法では予めキーポイントパッチを大量に抽出し, 
 その中から使用するパッチを適宜選択することで , 
 キーポイントパッチの位置を最適化の過程で変化させる.
-各世代で評価関数が変動するため, 進化計算手法にはCMA-ESを用いる. 
+各世代で評価関数が変動するため, 進化計算手法にはCMA-ES\cite{CMA-ES}を用いる. 
 次のようなステップで実行する. 
 \begin{enumerate}[Step1.]
     \item キーポイント周囲の点をパッチ集合$\mathcal{A}$として抽出する
@@ -185,14 +185,32 @@ $L_g = \lfloor \frac{\text{count}(\mathcal{A}^{g+1})}{N_u} \rfloor$である.
 
 \section{実験}
 本手法と従来のKPP-ECRで実際にレジストレーションを行った. 
-実験では時間短縮のため, 各点群に2mmのボクセルサンプリングを行った.  
+点群にStanfordレポジトリ\cite{stanford}を使用し, 
+実装にはPoint Cloud Library\cite{PCL}を使用した. 
+実験では時間短縮のため, 各点群に各辺2mmのボクセルサンプリングを行った.  
 実験は各データセットで30回づつ行い, 結果はその平均を表示する. 
-実験パラメータとその結果を\ref{Dynamic-result}に示す. 
+結果を\ref{Dynamic-result}に示す. 
 ここで結果の単位はメッシュ解像度であり, 成功はレジストレーション
 結果と真の変換を行った点群との平均距離がターゲット点群のメッシュ解像度以下,
 すなわちRMSEが1以下の時とした. 
 
-\begin{table}[b]
+\begin{table}[h]
+    \begin{center}
+    \small
+    \caption{実験に使用した点群 \label{dynamic_reg_table}}
+    \begin{tabular}{c ccc} \hline
+        実験 & ソース点群 & ターゲット点群     & オーバラップ率 \\ \hline \hline
+        exp1 &  Bun315  &  Bun000  & $ 74.5 $ \%    \\
+        exp2 &  Bun315  &  Bun045  & $ 57.3 $ \%    \\ \hline
+        exp3 &  Armadillo150  &  Armadillo180  & $ 68.4 $ \%    \\
+        exp4 &  Armadillo150  &  Armadillo210  & $ 46.6 $ \%    \\ \hline
+        exp5 &  Dragon336  &  Dragon0   & $ 81.1 $ \%    \\
+        exp6 &  Dragon336  &  Dragon24  & $ 65.0 $ \%    \\ \hline
+        exp7 &  happyStand\_336  &  happyStand\_0  & $ 79.7 $ \%    \\
+        exp8 &  happyStand\_336  &  happyStand\_24 & $ 56.1 $ \%    \\ \hline
+
+    \end{tabular}
+    \end{center}
     \footnotesize 
     \caption{提案手法と従来法のレジストレーション比較\label{Dynamic-result}}
     \begin{center}
@@ -228,6 +246,36 @@ $L_g = \lfloor \frac{\text{count}(\mathcal{A}^{g+1})}{N_u} \rfloor$である.
 \end{table}      
 
 \section{考察・結言}
+exp3では, RMSEは小さいものの, 従来法の成功率が0となった. 
+これはキーポイントパッチを従来法をパラメータ通りに抽出した結果, 
+一部オーバラップしていない点が抽出されてしまったためである.  
+パラメータの調整を行ってから再実験を行うと, 成功率が1.0となった. 
+この結果からも, 従来法のパラメータ調整法による位置指定の難しさがわかる. 
+exp2, exp4ではオーバラップ率が低いため, 
+従来法でのレジストレーションが不可能であった実験である.
+オーバラップ率が小さいレジストレーションであっても, 提案手法によって
+可能となるケースが現れた. 
+これは, 初歩的検討でありながら提案手法の妥当性の表れであると考えられる. 
+一方で, exp1, 5, 7では従来法よりも成功率が落ちた. 
+また, exp8では提案手法を用いても成功することができなかった. 
+これはパッチの評価, 更新, 選択がいまだ洗礼されていないためであると考えられる. 
+
+パッチの評価では距離の影響が大きく出てしまう. 
+exp7,exp8で用いたhappyStandは円柱に近い形状をしているため, 
+点群の腹部や台座の距離は回転していても近くなってしまう. 
+そのため, 有効な収束を行うためのパッチが残すことができなかった. 
+これを解決するためには距離を標準化することや形状による影響を大きくする
+などして, 距離がパッチ評価にかかる影響を小さくする必要がある. 
+選択法ではよりパッチの相対位置の距離を離して選択する手法を考案する必要がある. 
+これは, 部分的な局所解に陥ることを防ぎ, 
+パッチの更新によって残されるパッチが一部に集中することを防ぐのに有効であると思われる. 
+また, exp1, 5, 7では収束が遅い試行のとき, 
+収束がなされていない段階でオーバラップするほとんどのパッチが消されてしまう失敗が
+観察によって見受けられた. 
+そこでパッチの更新では世代によって係数$k$を決定するのではなく, 
+CMA-ESのステップサイズ$\sigma$を利用して決定する必要がある. 
+
+
 
 \begin{thebibliography}{1}
 \bibitem{KPP} 植西一馬, サンドバル ハイメ, 岩切宗利, 田中清 : 
@@ -240,6 +288,11 @@ graphics.stanford.edu/data/3Dscanrep/}
 "The CMA evolution strategy: a comparing review", Towards a new evolutionary 
 computation. Advances on estimation of distribution algorithms, 
 Springer, pp. 1769–1776, CiteSeerX 10.1.1.139.7369 (2006)
+\bibitem{PCL}
+R.B. Rusu, S. Cousins: "3D is here: Point Cloud Library (PCL)", 
+Proc. of IEEE International Conference on Robotics and Automation, pp.1–4, 
+IEEE(2011).
+
 \end{thebibliography}
 \clearpage
 \end{document}
