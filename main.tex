@@ -1,6 +1,6 @@
 \documentclass[twocolumn, 9pt, a4j, dvipdfmx]{jsarticle}
 %
-\usepackage[top=20truemm,bottom=20truemm,left=15truemm,right=15truemm]{geometry}
+\usepackage[top=20truemm,bottom=20truemm,left=16truemm,right=16truemm]{geometry}
 
 %
 \usepackage{url}
@@ -278,10 +278,9 @@ exp8では提案手法を用いても成功することができなかった.
 これらは今後の課題とする. 
 
 \section{まとめと今後の課題}
-今回の提案手法ではオーバラップの小さい点群同士のレジストレーションに
-おいて, 従来法では難しかったKPP位置を自動的に適切な位置に抽出するための
-提案を行った. 実験では本提案手法は粗雑であるが, 位置決定のための方針として
-妥当性が示された. 
+今回の提案手法ではオーバラップの小さい点群同士のレジストレーションで, 
+従来法では難しかったKPP位置を自動的に適切な位置に抽出するための提案を行った.
+実験では本提案手法は粗雑であるが, 位置決定のための方針として妥当性が示された. 
 
 一方で今後の課題は多く残されている. 
 特に一部が広い範囲で似た形状を持つ点群同士であると, 
@@ -299,6 +298,7 @@ exp8では提案手法を用いても成功することができなかった.
 CMA-ESのステップサイズ$\sigma$を利用して決定する必要がある. 
 
 
+\normalsize
 \begin{thebibliography}{1}
 \bibitem{KPP} 植西一馬, サンドバル ハイメ, 岩切宗利, 田中清 : 
 "キーポイントパッチ抽出法を用いた高能率な進化計算による3次元点群レジストレーション", 
@@ -314,7 +314,6 @@ Springer, pp. 1769–1776, CiteSeerX 10.1.1.139.7369 (2006)
 R.B. Rusu, S. Cousins: "3D is here: Point Cloud Library (PCL)", 
 Proc. of IEEE International Conference on Robotics and Automation, pp.1–4, 
 IEEE(2011).
-
 \end{thebibliography}
-\clearpage
+\normalsize
 \end{document}
